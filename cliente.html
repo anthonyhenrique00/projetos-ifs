@@ -1,0 +1,103 @@
+
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Loja - MercadoAgroIFS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="index.html"><span>MercadoAgroIFS</span></a>
+    <div class="d-flex gap-2">
+      <a href="cadastro.html" class="btn btn-sm btn-outline-success">Cadastro</a>
+      <a href="carrinho.html" class="btn btn-sm btn-ifs">Carrinho</a>
+    </div>
+  </div>
+</nav>
+
+<main class="container py-4">
+  <div class="d-flex justify-content-between align-items-end mb-3">
+    <h2 class="mb-0">Loja</h2>
+    <form class="d-flex" role="search" onsubmit="event.preventDefault()">
+      <input class="form-control me-2" type="search" placeholder="Buscar por nome..." id="busca">
+      <button class="btn btn-outline-dark" id="btnBuscar">Buscar</button>
+    </form>
+  </div>
+
+  <div id="grid" class="row g-4"></div>
+</main>
+
+<script src="mercadoagro.js"></script>
+<script>
+const grid = document.getElementById('grid');
+const inputBusca = document.getElementById('busca');
+const btnBuscar = document.getElementById('btnBuscar');
+
+async function garantirEstoque(){
+  let est = getEstoque();
+  if(!est){
+   
+    try{ est = await carregarEstoqueDeArquivo('./estoque.json'); }
+    catch(e){ console.error(e); alert('Não foi possível carregar o estoque. Use a página de Cadastro.'); }
+  }
+  return est || [];
+}
+
+function renderCards(lista){
+  grid.innerHTML = '';
+  lista.forEach((p, i)=>{
+    const card = document.createElement('div');
+    card.className = 'col-12 col-md-6 col-lg-4';
+    card.innerHTML = `
+      <div class="card h-100">
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-start">
+            <h5 class="card-title text-success">${p.nome}</h5>
+            <span class="badge badge-ifs">${p.quantidade} un.</span>
+          </div>
+          <p class="card-text small text-secondary">${p.descricao}</p>
+          <div class="mt-auto">
+            <div class="mb-2">Peso: <strong>${p.peso} kg</strong></div>
+            <div class="h4 mb-3 text-dark">R$ ${p.preco.toFixed(2)}</div>
+            <div class="input-group">
+              <input type="number" min="1" max="${p.quantidade}" value="1" class="form-control" id="qtd-${i}">
+              <button class="btn btn-ifs" data-index="${i}">Adicionar</button>
+            </div>
+            <div class="small text-muted mt-2">Entrega: até ${p.dias_entrega} dias</div>
+          </div>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+
+  grid.querySelectorAll('button.btn-ifs').forEach(btn=>{
+    btn.addEventListener('click',(ev)=>{
+      const i = Number(ev.currentTarget.dataset.index);
+      const qtd = Number(document.getElementById('qtd-'+i).value) || 1;
+      addAoCarrinho(i, qtd);
+      ev.currentTarget.textContent = 'Adicionado ✓';
+      setTimeout(()=> ev.currentTarget.textContent = 'Adicionar', 1000);
+    });
+  });
+}
+
+let estoqueCache = [];
+(async function init(){
+  estoqueCache = await garantirEstoque();
+  renderCards(estoqueCache);
+})();
+
+btnBuscar.addEventListener('click', ()=>{
+  const termo = inputBusca.value.toLowerCase().trim();
+  const filtrado = estoqueCache.filter(p => p.nome.toLowerCase().includes(termo));
+  renderCards(filtrado);
+});
+</script>
+</body>
+</html>

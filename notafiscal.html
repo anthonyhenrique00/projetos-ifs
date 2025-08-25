@@ -1,0 +1,123 @@
+
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nota Fiscal - MercadoAgroIFS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="index.html"><span>MercadoAgroIFS</span></a>
+    <div class="d-flex gap-2">
+      <a href="cliente.html" class="btn btn-sm btn-outline-success">Loja</a>
+      <a href="carrinho.html" class="btn btn-sm btn-outline-dark">Carrinho</a>
+    </div>
+  </div>
+</nav>
+
+<main class="container py-4">
+  <div class="d-flex justify-content-between align-items-end mb-3">
+    <div>
+      <h2 class="mb-0">Nota Fiscal</h2>
+      <div class="text-secondary small">MercadoAgroIFS</div>
+    </div>
+    <div class="text-end">
+      <button id="btnFinalizar" class="btn btn-ifs">Confirmar e Gerar Nota</button>
+      <button id="btnBaixarEstoque" class="btn btn-outline-dark">Baixar estoque atualizado</button>
+    </div>
+  </div>
+
+  <div id="nota" class="card p-3">
+    <div class="d-flex justify-content-between">
+      <div>
+        <div><strong>MercadoAgroIFS</strong></div>
+        <div class="small">CNPJ: 00.000.000/0001-00</div>
+      </div>
+      <div class="text-end">
+        <div>Data da compra: <span id="dataCompra"></span></div>
+        <div>Entrega prevista: <span id="dataEntrega"></span></div>
+      </div>
+    </div>
+    <hr>
+    <div class="table-responsive">
+      <table class="table table-sm">
+        <thead>
+          <tr><th>Produto</th><th>Qtd</th><th>Peso (kg)</th><th>Preço unit.</th><th>Total</th></tr>
+        </thead>
+        <tbody id="linhas"></tbody>
+      </table>
+    </div>
+    <div class="row">
+      <div class="col-md-6"></div>
+      <div class="col-md-6">
+        <ul class="list-group">
+          <li class="list-group-item d-flex justify-content-between"><span>Subtotal</span><strong id="subtotal"></strong></li>
+          <li class="list-group-item d-flex justify-content-between"><span>ICMS (25%)</span><strong id="icms"></strong></li>
+          <li class="list-group-item d-flex justify-content-between"><span>Frete</span><strong id="frete"></strong></li>
+          <li class="list-group-item d-flex justify-content-between list-group-item-success"><span>Total</span><strong id="total"></strong></li>
+          <li class="list-group-item d-flex justify-content-between"><span>Peso total</span><strong id="peso"></strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="mercadoagro.js"></script>
+<script>
+function carregaNota(){
+  const dados = JSON.parse(sessionStorage.getItem('ultimaCompra') || 'null');
+  if(!dados){
+    
+    const comp = calcularTotais(0);
+    preenche(comp);
+  }else{
+    preenche(dados);
+  }
+}
+
+function preenche(compra){
+  const linhas = document.getElementById('linhas');
+  linhas.innerHTML = '';
+  compra.itens.forEach(i=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${i.nome}</td>
+      <td>${i.quantidade}</td>
+      <td>${i.pesoTotal}</td>
+      <td>${brl(i.preco)}</td>
+      <td>${brl(i.total)}</td>
+    `;
+    linhas.appendChild(tr);
+  });
+  const dataCompra = new Date(compra.dataCompraISO);
+  const dataEntrega = new Date(compra.dataEntregaISO);
+  document.getElementById('dataCompra').textContent = dataCompra.toLocaleString('pt-BR');
+  document.getElementById('dataEntrega').textContent = dataEntrega.toLocaleDateString('pt-BR');
+  document.getElementById('subtotal').textContent = brl(compra.subtotal);
+  document.getElementById('icms').textContent = brl(compra.icms);
+  document.getElementById('frete').textContent = brl(compra.frete);
+  document.getElementById('total').textContent = brl(compra.totalFinal);
+  document.getElementById('peso').textContent = compra.pesoTotal.toLocaleString('pt-BR') + ' kg';
+}
+
+document.getElementById('btnFinalizar').addEventListener('click', ()=>{
+  
+  const atualizado = abaterEstoquePelaCompra();
+  limparCarrinho();
+  alert('Compra confirmada! Estoque atualizado em memória.');
+});
+
+document.getElementById('btnBaixarEstoque').addEventListener('click', ()=>{
+  const atual = getEstoque();
+  if(!atual){ alert('Carregue um estoque primeiro (use Cadastro).'); return; }
+  baixarJSON('estoque-atualizado.json', atual);
+});
+
+carregaNota();
+</script>
+</body>
+</html>

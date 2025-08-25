@@ -1,0 +1,43 @@
+:root{
+  --ifs-green-600:#1b5e20;
+  --ifs-green-500:#2e7d32;
+  --ifs-green-400:#43a047;
+  --ifs-red-600:#c62828;
+  --ifs-black:#111111;
+}
+
+body{
+  background: #9acca4;
+}
+
+.navbar-brand span{
+  color: var(--ifs-green-600);
+  font-weight: 700;
+}
+
+.badge-ifs{
+  background: var(--ifs-red-600);
+}
+
+.btn-ifs{
+  background: var(--ifs-green-600);
+  border-color: var(--ifs-green-600);
+}
+.btn-ifs:hover{
+  background: var(--ifs-green-500);
+  border-color: var(--ifs-green-500);
+}
+
+.card{
+  border-radius: 1rem;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+.table thead th{
+  background: #9acca4;
+}
+
+.footer{
+  border-top: 1px solid #e9ecef;
+  color: #6c757d;
+}

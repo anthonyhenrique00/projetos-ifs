@@ -1,0 +1,42 @@
+[
+  {
+    "nome": "Sementes de Milho Híbrido",
+    "descricao": "Sementes de alta produtividade, resistentes a pragas.",
+    "peso": 5,
+    "quantidade": 50,
+    "preco": 120.5,
+    "dias_entrega": 7
+  },
+  {
+    "nome": "Fertilizante NPK 20-10-10",
+    "descricao": "Adubo granulado para preparo do solo.",
+    "peso": 25,
+    "quantidade": 30,
+    "preco": 89.9,
+    "dias_entrega": 5
+  },
+  {
+    "nome": "Herbicida Selectivo",
+    "descricao": "Controle de ervas daninhas em lavouras de grãos.",
+    "peso": 2,
+    "quantidade": 40,
+    "preco": 55.0,
+    "dias_entrega": 10
+  },
+  {
+    "nome": "Pulverizador Costal Manual 20L",
+    "descricao": "Equipamento para aplicação de defensivos agrícolas.",
+    "peso": 8,
+    "quantidade": 15,
+    "preco": 320.0,
+    "dias_entrega": 12
+  },
+  {
+    "nome": "Calcário Agrícola",
+    "descricao": "Corretivo de acidez do solo, tipo dolomítico.",
+    "peso": 50,
+    "quantidade": 25,
+    "preco": 45.75,
+    "dias_entrega": 8
+  }
+]
